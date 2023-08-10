@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品数量方案</title>
+    <script>
+        function calculate() {
+            var n = parseInt(document.getElementById("quantity").value);
+            var y = parseFloat(document.getElementById("targetPrice").value);
+            var prices = [];
+            var quantities = [];
+
+            for (var i = 0; i < n; i++) {
+                prices[i] = parseFloat(document.getElementById("price" + i).value);
+                quantities[i] = 0;
+            }
+
+            var total = 0;
+            var diff = y;
+
+            while (diff > 0) {
+                var minDiff = diff;
+                var minIndex = -1;
+
+                for (var i = 0; i < n; i++) {
+                    var newTotal = total + prices[i] * (quantities[i] + 1);
+                    var newDiff = Math.abs(y - newTotal);
+
+                    if (newDiff < minDiff) {
+                        minDiff = newDiff;
+                        minIndex = i;
+                    }
+                }
+
+                if (minIndex === -1) {
+                    break;
+                }
+
+                quantities[minIndex]++;
+                total += prices[minIndex];
+                diff = y - total;
+            }
+
+            for (var i = 0; i < n; i++) {
+                document.getElementById("output" + i).textContent = "商品" + (i + 1) + "需要 " + quantities[i] + " 个";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>商品数量方案</h1>
+    <label for="quantity">商品数量:</label>
+    <input type="number" id="quantity" min="1"><br><br>
+
+    <label for="targetPrice">目标总价:</label>
+    <input type="number" id="targetPrice" step="0.01"><br><br>
+
+    <h2>商品单价:</h2>
+
+    <div id="inputFields"></div>
+
+    <button onclick="calculate()">计算</button>
+
+    <h2>结果:</h2>
+
+    <div id="output"></div>
+
+    <script>
+        var inputFields = document.getElementById("inputFields");
+
+        document.getElementById("quantity").addEventListener("input", function () {
+            var quantity = parseInt(this.value);
+
+            inputFields.innerHTML = "";
+
+            for (var i = 0; i < quantity; i++) {
+                var label = document.createElement("label");
+                label.textContent = "商品" + (i + 1) + " 单价:";
+                inputFields.appendChild(label);
+
+                var input = document.createElement("input");
+                input.type = "number";
+                input.step = "0.01";
+                input.id = "price" + i;
+                inputFields.appendChild(input);
+
+                inputFields.appendChild(document.createElement("br"));
+                inputFields.appendChild(document.createElement("br"));
+
+                var output = document.createElement("div");
+                output.id = "output" + i;
+                inputFields.appendChild(output);
+            }
+        });
+    </script>
+</body>
+</html>
